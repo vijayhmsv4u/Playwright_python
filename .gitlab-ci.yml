@@ -1,0 +1,20 @@
+image: python:3.11
+
+stages:
+  - test
+
+before_script:
+  - python --version
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+  - playwright install --with-deps
+
+playwright_tests:
+  stage: test
+  script:
+    - pytest
+  artifacts:
+    when: always
+    paths:
+      - reports/
+      - test-results/
