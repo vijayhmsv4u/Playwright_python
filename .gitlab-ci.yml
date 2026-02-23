@@ -1,27 +1,87 @@
-image: mcr.microsoft.com/playwright/python:v1.58.0-jammy
-
 stages:
   - test
-  - report
+  - quality
+  - docker
 
+# ------------------------------------------------
+# GLOBAL VARIABLES
+# ------------------------------------------------
 variables:
-  CI: "true"
+  PLAYWRIGHT_BROWSERS_PATH: "/ms-playwright"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
-tests:
+cache:
+  paths:
+    - .cache/pip
+
+# ------------------------------------------------
+# PLAYWRIGHT TEST + ALLURE REPORT
+# ------------------------------------------------
+playwright_tests:
   stage: test
-  script:
+  image: mcr.microsoft.com/playwright/python:v1.58.0-jammy
+
+  before_script:
+    - python --version
+    - pip install --upgrade pip
     - pip install -r requirements.txt
-    - pytest --browser chromium --alluredir=allure-results
+    - playwright install --with-deps
+
+  script:
+    - pytest tests --alluredir=allure-results
+
   artifacts:
     when: always
     paths:
       - allure-results
+      - reports
+    expire_in: 1 week
 
-allure_report:
-  stage: report
-  image: frankescobar/allure-docker-service
-  script:
-    - allure generate allure-results -o allure-report --clean
-  artifacts:
+# ------------------------------------------------
+# SONARCLOUD ANALYSIS
+# ------------------------------------------------
+sonarqube_check:
+  stage: quality
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+
+  cache:
+    key: sonar
     paths:
-      - allure-report
+      - .sonar/cache
+
+  script:
+    - sonar-scanner
+        -Dsonar.projectKey=vijayhmsv93-project
+        -Dsonar.organization=vijay-bhaskar
+        -Dsonar.sources=.
+        -Dsonar.host.url=$SONAR_HOST_URL
+        -Dsonar.login=$SONAR_TOKEN
+
+  allow_failure: false
+
+# ------------------------------------------------
+# DOCKER BUILD STAGE
+# ------------------------------------------------
+docker_build:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+
+  before_script:
+    - docker info
+
+  script:
+    - docker build -t playwright-python-project .
+
+  only:
+    - main
