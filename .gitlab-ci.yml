@@ -3,6 +3,10 @@ image: python:3.11
 stages:
   - test
 
+cache:
+  paths:
+    - .cache/pip
+
 before_script:
   - python --version
   - pip install --upgrade pip
@@ -12,9 +16,9 @@ before_script:
 playwright_tests:
   stage: test
   script:
-    - pytest
+    - pytest --junitxml=reports/results.xml
   artifacts:
     when: always
     paths:
       - reports/
-      - test-results/
+    expire_in: 1 week
