@@ -4,6 +4,9 @@ stages:
   - test
   - report
 
+variables:
+  CI: "true"
+
 tests:
   stage: test
   script:
