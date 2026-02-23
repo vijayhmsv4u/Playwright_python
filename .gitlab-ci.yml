@@ -1,24 +1,24 @@
-image: python:3.11
+image: mcr.microsoft.com/playwright/python:v1.41.1-jammy
 
 stages:
   - test
+  - report
 
-cache:
-  paths:
-    - .cache/pip
-
-before_script:
-  - python --version
-  - pip install --upgrade pip
-  - pip install -r requirements.txt
-  - playwright install --with-deps
-
-playwright_tests:
+tests:
   stage: test
   script:
-    - pytest --junitxml=reports/results.xml
+    - pip install -r requirements.txt
+    - pytest --alluredir=allure-results
   artifacts:
     when: always
     paths:
-      - reports/
-    expire_in: 1 week
+      - allure-results
+
+allure_report:
+  stage: report
+  image: frankescobar/allure-docker-service
+  script:
+    - allure generate allure-results -o allure-report --clean
+  artifacts:
+    paths:
+      - allure-report
