@@ -57,8 +57,8 @@ sonarqube_check:
 
   script:
     - sonar-scanner
-        -Dsonar.projectKey=vijayhmsv93-project
-        -Dsonar.organization=vijay-bhaskar
+        -Dsonar.projectKey=vijayhmsv93-group_vijayhmsv93-project
+        -Dsonar.organization=vijayhmsv93-group
         -Dsonar.sources=.
         -Dsonar.host.url=$SONAR_HOST_URL
         -Dsonar.login=$SONAR_TOKEN
