@@ -8,7 +8,7 @@ tests:
   stage: test
   script:
     - pip install -r requirements.txt
-    - pytest --alluredir=allure-results
+    - pytest --browser chromium --alluredir=allure-results
   artifacts:
     when: always
     paths:
