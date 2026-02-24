@@ -3,13 +3,10 @@ stages:
   - quality
   - docker
 
-# ------------------------------------------------
-# PIPELINE EXECUTION CONTROL
-# (Pipeline runs ONLY manually)
-# ------------------------------------------------
+# Pipeline allowed but jobs manual
 workflow:
   rules:
-    - when: manual
+    - when: always
 
 # ------------------------------------------------
 # GLOBAL VARIABLES
@@ -23,7 +20,7 @@ cache:
     - .cache/pip
 
 # ------------------------------------------------
-# PLAYWRIGHT TEST + ALLURE REPORT
+# PLAYWRIGHT TESTS
 # ------------------------------------------------
 playwright_tests:
   stage: test
@@ -31,8 +28,6 @@ playwright_tests:
   image: mcr.microsoft.com/playwright/python:v1.58.0-jammy
 
   before_script:
-    - python --version
-    - pip install --upgrade pip
     - pip install -r requirements.txt
     - playwright install --with-deps
 
@@ -44,10 +39,9 @@ playwright_tests:
     paths:
       - allure-results
       - reports
-    expire_in: 1 week
 
 # ------------------------------------------------
-# SONARCLOUD ANALYSIS
+# SONARCLOUD
 # ------------------------------------------------
 sonarqube_check:
   stage: quality
@@ -55,15 +49,6 @@ sonarqube_check:
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
-
-  variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-    GIT_DEPTH: "0"
-
-  cache:
-    key: sonar
-    paths:
-      - .sonar/cache
 
   script:
     - sonar-scanner
@@ -85,9 +70,6 @@ docker_build:
 
   variables:
     DOCKER_TLS_CERTDIR: ""
-
-  before_script:
-    - docker info
 
   script:
     - docker build -t playwright-python-project .
