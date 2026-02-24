@@ -4,12 +4,12 @@ stages:
   - docker
 
 # ------------------------------------------------
-# PIPELINE EXECUTION CONTROL (IMPORTANT)
+# PIPELINE EXECUTION CONTROL
+# (Pipeline runs ONLY manually)
 # ------------------------------------------------
-
-when: manual  
-
-
+workflow:
+  rules:
+    - when: manual
 
 # ------------------------------------------------
 # GLOBAL VARIABLES
@@ -51,12 +51,13 @@ playwright_tests:
 # ------------------------------------------------
 sonarqube_check:
   stage: quality
+  when: manual
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
 
   variables:
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
     GIT_DEPTH: "0"
 
   cache:
@@ -72,13 +73,12 @@ sonarqube_check:
         -Dsonar.host.url=$SONAR_HOST_URL
         -Dsonar.login=$SONAR_TOKEN
 
-  allow_failure: false
-
 # ------------------------------------------------
-# DOCKER BUILD STAGE
+# DOCKER BUILD
 # ------------------------------------------------
 docker_build:
   stage: docker
+  when: manual
   image: docker:latest
   services:
     - docker:dind
