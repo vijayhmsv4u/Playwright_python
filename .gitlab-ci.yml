@@ -4,6 +4,15 @@ stages:
   - docker
 
 # ------------------------------------------------
+# PIPELINE EXECUTION CONTROL (IMPORTANT)
+# ------------------------------------------------
+workflow:
+  rules:
+    - when: manual  
+
+
+
+# ------------------------------------------------
 # GLOBAL VARIABLES
 # ------------------------------------------------
 variables:
@@ -31,7 +40,7 @@ playwright_tests:
     - pytest tests --alluredir=allure-results
 
   artifacts:
-    when: manual
+    when: always
     paths:
       - allure-results
       - reports
