@@ -31,7 +31,7 @@ playwright_tests:
     - pytest tests --alluredir=allure-results
 
   artifacts:
-    when: always
+    when: manual
     paths:
       - allure-results
       - reports
