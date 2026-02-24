@@ -6,9 +6,8 @@ stages:
 # ------------------------------------------------
 # PIPELINE EXECUTION CONTROL (IMPORTANT)
 # ------------------------------------------------
-workflow:
-  rules:
-    - when: manual  
+
+when: manual  
 
 
 
