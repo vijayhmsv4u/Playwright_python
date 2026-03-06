@@ -24,4 +24,3 @@ def test_exmaplerun(page) -> None:
 
     expect(page.get_by_role("heading")).to_contain_text("Login")
 
-
