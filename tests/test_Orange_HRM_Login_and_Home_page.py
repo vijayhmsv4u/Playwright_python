@@ -1,5 +1,5 @@
 import re
-from playwright.sync_api import Page, sync_playwright, expect
+from playwright.sync_api import sync_playwright,expect
 
 
 def test_exmaplerun(page) -> None:
@@ -13,15 +13,15 @@ def test_exmaplerun(page) -> None:
     page.wait_for_timeout(15000)
     expect(page.get_by_role("heading")).to_contain_text("Dashboard")
     page.get_by_role("link", name="Leave").click()
-    page.wait_for_timeout(15000)
+    expect(page.locator("h6")).to_be_visible()
     expect(page.locator("h6")).to_contain_text("Leave")
     page.get_by_role("link", name="Performance").click()
-    page.wait_for_timeout(15000)
+    expect(page.get_by_role("banner")).to_be_visible()
     expect(page.get_by_role("banner")).to_contain_text("Performance")
     page.get_by_role("banner").get_by_role("img", name="profile picture").click()
-    page.wait_for_timeout(15000)
+    expect(page.get_by_role("menuitem", name="Logout")).to_be_visible()
     page.get_by_role("menuitem", name="Logout").click()
-    page.wait_for_timeout(15000)
+
     expect(page.get_by_role("heading")).to_contain_text("Login")
 
 
