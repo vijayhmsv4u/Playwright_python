@@ -23,4 +23,3 @@ def test_exmaplerun(page) -> None:
     page.get_by_role("menuitem", name="Logout").click()
     expect(page.get_by_role("heading")).to_contain_text("Login")
 
-
